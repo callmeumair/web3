@@ -1,83 +1,146 @@
-import { BrowserProvider, Contract, type JsonRpcSigner } from 'ethers';
-import type { ContractInterface } from 'ethers';
+import { BrowserProvider, Contract, JsonRpcSigner, Network, Interface } from 'ethers';
+import SocialNetwork from '../artifacts/contracts/SocialNetwork.sol/SocialNetwork.json';
 
 interface Web3State {
   provider: BrowserProvider | null;
   signer: JsonRpcSigner | null;
   account: string | null;
+  network: Network | null;
+  isConnected: boolean;
+  error: string | null;
 }
 
-export class Web3Handler {
+class Web3Handler {
   private state: Web3State = {
     provider: null,
     signer: null,
-    account: null
+    account: null,
+    network: null,
+    isConnected: false,
+    error: null
   };
 
-  async initialize(): Promise<boolean> {
-    if (typeof window === 'undefined' || !window.ethereum) {
-      console.error('MetaMask is not installed');
+  private listeners: ((state: Web3State) => void)[] = [];
+
+  constructor() {
+    if (typeof window !== 'undefined' && window.ethereum) {
+      this.initialize();
+    }
+  }
+
+  private async initialize() {
+    try {
+      const provider = new BrowserProvider(window.ethereum!);
+      const network = await provider.getNetwork();
+      const signer = await provider.getSigner();
+      const account = await signer.getAddress();
+
+      this.state = {
+        provider,
+        signer,
+        account,
+        network,
+        isConnected: true,
+        error: null
+      };
+
+      this.notifyListeners();
+
+      // Listen for account changes
+      window.ethereum!.on('accountsChanged', this.handleAccountsChanged);
+      // Listen for chain changes
+      window.ethereum!.on('chainChanged', this.handleChainChanged);
+    } catch (error) {
+      console.error('Failed to initialize Web3:', error);
+      this.state.error = 'Failed to initialize Web3';
+      this.notifyListeners();
+    }
+  }
+
+  private handleAccountsChanged = (accounts: string[]) => {
+    if (accounts.length === 0) {
+      this.state = {
+        ...this.state,
+        account: null,
+        isConnected: false
+      };
+    } else {
+      this.state = {
+        ...this.state,
+        account: accounts[0]
+      };
+    }
+    this.notifyListeners();
+  };
+
+  private handleChainChanged = () => {
+    window.location.reload();
+  };
+
+  public connect = async (): Promise<boolean> => {
+    if (!window.ethereum) {
+      this.state.error = 'Please install MetaMask';
+      this.notifyListeners();
       return false;
     }
 
     try {
-      this.state.provider = new BrowserProvider(window.ethereum);
-      const accounts = await window.ethereum.request({
-        method: 'eth_requestAccounts'
-      }) as string[];
-      
-      this.state.account = accounts[0];
-      this.state.signer = await this.state.provider.getSigner();
-      
+      await window.ethereum.request({ method: 'eth_requestAccounts' });
+      await this.initialize();
       return true;
     } catch (error) {
-      console.error('Failed to initialize Web3:', error);
+      console.error('Failed to connect:', error);
+      this.state.error = 'Failed to connect to MetaMask';
+      this.notifyListeners();
       return false;
     }
-  }
+  };
 
-  async createContract(
-    address: string,
-    abi: ContractInterface
-  ): Promise<Contract | null> {
-    if (!this.state.signer || !address) {
-      console.error('Signer or contract address not available');
+  public getContract = (address: string): Contract | null => {
+    if (!this.state.signer) {
+      console.error('No signer available');
       return null;
     }
 
     try {
-      return new Contract(address, abi, this.state.signer);
+      const iface = new Interface(SocialNetwork.abi);
+      return new Contract(address, iface, this.state.signer);
     } catch (error) {
       console.error('Failed to create contract instance:', error);
       return null;
     }
-  }
+  };
 
-  getAccount(): string | null {
-    return this.state.account;
-  }
+  public getState = (): Web3State => {
+    return { ...this.state };
+  };
 
-  async handleAccountsChanged(accounts: string[]): Promise<void> {
-    if (accounts.length === 0) {
-      this.state.account = null;
-      this.state.signer = null;
-    } else if (accounts[0] !== this.state.account) {
-      this.state.account = accounts[0];
-      if (this.state.provider) {
-        this.state.signer = await this.state.provider.getSigner();
-      }
+  public addListener = (listener: (state: Web3State) => void) => {
+    this.listeners.push(listener);
+    return () => {
+      this.listeners = this.listeners.filter(l => l !== listener);
+    };
+  };
+
+  private notifyListeners = () => {
+    this.listeners.forEach(listener => listener(this.getState()));
+  };
+
+  public disconnect = () => {
+    if (window.ethereum) {
+      window.ethereum.removeListener('accountsChanged', this.handleAccountsChanged);
+      window.ethereum.removeListener('chainChanged', this.handleChainChanged);
     }
-  }
+    this.state = {
+      provider: null,
+      signer: null,
+      account: null,
+      network: null,
+      isConnected: false,
+      error: null
+    };
+    this.notifyListeners();
+  };
+}
 
-  setupAccountChangeListener(callback: (accounts: string[]) => void): void {
-    if (typeof window !== 'undefined' && window.ethereum) {
-      window.ethereum.on('accountsChanged', callback);
-    }
-  }
-
-  removeAccountChangeListener(callback: (accounts: string[]) => void): void {
-    if (typeof window !== 'undefined' && window.ethereum) {
-      window.ethereum.removeListener('accountsChanged', callback);
-    }
-  }
-} 
+export const web3Handler = new Web3Handler(); 
