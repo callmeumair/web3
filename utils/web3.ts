@@ -103,8 +103,7 @@ class Web3Handler {
     }
 
     try {
-      const iface = new Interface(SocialNetwork.abi);
-      return new Contract(address, iface, this.state.signer);
+      return new Contract(address, SocialNetwork.abi, this.state.signer);
     } catch (error) {
       console.error('Failed to create contract instance:', error);
       return null;
