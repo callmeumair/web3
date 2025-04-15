@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { ethers } from 'ethers';
 import SocialNetwork from '../artifacts/contracts/SocialNetwork.sol/SocialNetwork.json';
@@ -6,20 +5,6 @@ import SocialNetwork from '../artifacts/contracts/SocialNetwork.sol/SocialNetwor
 interface LandingPageProps {
   onConnect: (account: string, contract: ethers.Contract) => void;
 }
-
-// Simple fade in animation
-const fadeIn = {
-  initial: { opacity: 0 },
-  animate: { opacity: 1 },
-  transition: { duration: 0.6 }
-};
-
-// Simple slide up animation
-const slideUp = {
-  initial: { opacity: 0, y: 30 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6 }
-};
 
 export default function LandingPage({ onConnect }: LandingPageProps) {
   const [isLogin, setIsLogin] = useState(true);
@@ -48,27 +33,18 @@ export default function LandingPage({ onConnect }: LandingPageProps) {
   };
 
   return (
-    <motion.div
-      {...fadeIn}
-      className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-800 text-white p-8"
-    >
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-800 text-white p-8 animate-fadeIn">
       <div className="max-w-4xl mx-auto">
-        <motion.div 
-          {...slideUp}
-          className="text-center mb-12"
-        >
+        <div className="text-center mb-12 animate-slideUp">
           <h1 className="text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
             Decentralized Social Network
           </h1>
           <p className="text-xl text-gray-300">
             Connect, share, and interact in a decentralized world
           </p>
-        </motion.div>
+        </div>
 
-        <motion.div 
-          {...fadeIn}
-          className="bg-gray-800/50 backdrop-blur-lg rounded-xl p-8 shadow-2xl border border-purple-500/20 mb-12"
-        >
+        <div className="bg-gray-800/50 backdrop-blur-lg rounded-xl p-8 shadow-2xl border border-purple-500/20 mb-12 animate-fadeIn">
           {!isLogin && (
             <div className="space-y-6 mb-6">
               <div>
@@ -77,7 +53,7 @@ export default function LandingPage({ onConnect }: LandingPageProps) {
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-4 py-2 bg-gray-700/50 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white"
+                  className="w-full px-4 py-2 bg-gray-700/50 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white transition-all duration-300"
                   placeholder="Enter your name"
                 />
               </div>
@@ -86,7 +62,7 @@ export default function LandingPage({ onConnect }: LandingPageProps) {
                 <textarea
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
-                  className="w-full px-4 py-2 bg-gray-700/50 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white"
+                  className="w-full px-4 py-2 bg-gray-700/50 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white transition-all duration-300"
                   placeholder="Tell us about yourself"
                   rows={3}
                 />
@@ -97,36 +73,31 @@ export default function LandingPage({ onConnect }: LandingPageProps) {
                   type="text"
                   value={avatar}
                   onChange={(e) => setAvatar(e.target.value)}
-                  className="w-full px-4 py-2 bg-gray-700/50 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white"
+                  className="w-full px-4 py-2 bg-gray-700/50 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white transition-all duration-300"
                   placeholder="Enter your avatar URL"
                 />
               </div>
             </div>
           )}
 
-          <motion.button
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
+          <button
             onClick={connectWallet}
-            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 px-6 rounded-lg font-semibold shadow-lg hover:shadow-purple-500/25 transition-all duration-300"
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 px-6 rounded-lg font-semibold shadow-lg hover:shadow-purple-500/25 transition-transform duration-300 hover:scale-[1.01] active:scale-[0.99]"
           >
             {isLogin ? 'Connect Wallet' : 'Create Profile'}
-          </motion.button>
+          </button>
 
           <p className="mt-4 text-center">
             <button
               onClick={() => setIsLogin(!isLogin)}
-              className="text-purple-400 hover:text-purple-300 font-medium"
+              className="text-purple-400 hover:text-purple-300 font-medium transition-colors duration-300"
             >
               {isLogin ? "Don't have a profile? Sign up" : 'Already have a profile? Log in'}
             </button>
           </p>
-        </motion.div>
+        </div>
 
-        <motion.div 
-          {...slideUp}
-          className="grid grid-cols-1 md:grid-cols-3 gap-8"
-        >
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 animate-slideUp">
           {[
             {
               title: "Decentralized",
@@ -141,17 +112,18 @@ export default function LandingPage({ onConnect }: LandingPageProps) {
               description: "Built and governed by the community"
             }
           ].map((feature) => (
-            <motion.div
+            <div
               key={feature.title}
-              whileHover={{ y: -3 }}
-              className="bg-gray-800/30 backdrop-blur-sm p-6 rounded-lg border border-purple-500/10 hover:border-purple-500/30 transition-colors duration-300"
+              className="bg-gray-800/30 backdrop-blur-sm p-6 rounded-lg border border-purple-500/10 hover:border-purple-500/30 transition-all duration-300 hover:-translate-y-1 group"
             >
-              <h3 className="text-xl font-semibold mb-2 text-purple-400">{feature.title}</h3>
+              <h3 className="text-xl font-semibold mb-2 text-purple-400 group-hover:text-purple-300 transition-colors duration-300">
+                {feature.title}
+              </h3>
               <p className="text-gray-400">{feature.description}</p>
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 } 
