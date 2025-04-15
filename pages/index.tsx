@@ -1,13 +1,30 @@
 import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-import SocialNetwork from '../contracts/SocialNetwork.sol/SocialNetwork.json';
+import SocialNetwork from '../artifacts/contracts/SocialNetwork.sol/SocialNetwork.json';
+
+interface Post {
+  author: string;
+  content: string;
+  timestamp: number;
+  likeCount: number;
+  commentCount: number;
+}
+
+interface Profile {
+  name: string;
+  bio: string;
+  avatar: string;
+  postCount: number;
+  followerCount: number;
+  followingCount: number;
+}
 
 export default function Home() {
-  const [account, setAccount] = useState('');
-  const [contract, setContract] = useState(null);
-  const [posts, setPosts] = useState([]);
-  const [newPost, setNewPost] = useState('');
-  const [profile, setProfile] = useState(null);
+  const [account, setAccount] = useState<string>('');
+  const [contract, setContract] = useState<ethers.Contract | null>(null);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [newPost, setNewPost] = useState<string>('');
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
     loadWeb3();
@@ -46,7 +63,7 @@ export default function Home() {
   const loadPosts = async () => {
     if (contract) {
       const postCount = await contract.postCount();
-      const posts = [];
+      const posts: Post[] = [];
       for (let i = 1; i <= postCount; i++) {
         const post = await contract.getPost(i);
         posts.push(post);
@@ -67,7 +84,7 @@ export default function Home() {
     }
   };
 
-  const likePost = async (postId) => {
+  const likePost = async (postId: number) => {
     if (contract) {
       try {
         await contract.likePost(postId);
@@ -100,7 +117,7 @@ export default function Home() {
           <div className="bg-white shadow rounded-lg p-6">
             <h2 className="text-2xl font-bold mb-4">Create Your Profile</h2>
             <button
-              onClick={() => contract.createProfile('User', 'Bio', 'avatar.png')}
+              onClick={() => contract?.createProfile('User', 'Bio', 'avatar.png')}
               className="bg-blue-500 text-white px-4 py-2 rounded"
             >
               Create Profile
@@ -114,7 +131,7 @@ export default function Home() {
                 value={newPost}
                 onChange={(e) => setNewPost(e.target.value)}
                 className="w-full p-2 border rounded"
-                rows="3"
+                rows={3}
                 placeholder="What's on your mind?"
               />
               <button

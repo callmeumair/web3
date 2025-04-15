@@ -1,4 +1,4 @@
-declare module "../contracts/SocialNetwork.sol/SocialNetwork.json" {
+declare module "../artifacts/contracts/SocialNetwork.sol/SocialNetwork.json" {
   const value: {
     abi: any[];
     bytecode: string;
