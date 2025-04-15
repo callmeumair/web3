@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Animation Utilities */
+@layer utilities {
+  .delay-300 {
+    animation-delay: 300ms;
+  }
+  .delay-500 {
+    animation-delay: 500ms;
+  }
+}
+
+/* Ensure animations play smoothly */
+* {
+  @apply transition-opacity duration-300 ease-in-out;
+} 

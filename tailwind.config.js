@@ -41,8 +41,22 @@ module.exports = {
         }
       },
       animation: {
-        fadeIn: 'fadeIn 0.6s ease-in-out',
-        slideUp: 'slideUp 0.6s ease-out forwards'
+        fadeIn: 'fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards',
+        slideUp: 'slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards'
+      },
+      transitionDuration: {
+        '0': '0ms',
+        '300': '300ms',
+        '500': '500ms',
+        '600': '600ms',
+      },
+      transitionDelay: {
+        '0': '0ms',
+        '300': '300ms',
+        '500': '500ms',
+      },
+      transitionTimingFunction: {
+        'ease-in-out': 'cubic-bezier(0.4, 0, 0.2, 1)',
       }
     },
   },
