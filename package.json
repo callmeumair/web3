@@ -1,35 +1,30 @@
 {
-  "name": "decentralized-social-network",
+  "name": "web3opia",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "hardhat compile && next build",
+    "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "compile": "hardhat compile",
-    "deploy": "hardhat run scripts/deploy.js --network localhost"
+    "lint": "next lint"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^5.0.2",
-    "autoprefixer": "^10.4.17",
-    "ethers": "^6.11.1",
-    "framer-motion": "^12.7.2",
-    "hardhat": "^2.20.1",
-    "next": "14.1.0",
-    "postcss": "^8.4.35",
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "autoprefixer": "^10.4.16",
+    "ethers": "^6.9.0",
+    "next": "14.0.0",
+    "postcss": "^8.4.31",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "tailwindcss": "^3.4.1",
-    "web3": "^4.5.0"
+    "tailwindcss": "^3.3.5",
+    "typescript": "^5.0.0"
   },
   "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
-    "@types/node": "^20.11.19",
-    "@types/react": "^18.2.57",
-    "@types/react-dom": "^18.2.19",
-    "eslint": "^8.56.0",
-    "eslint-config-next": "14.1.0",
-    "typescript": "^5.3.3"
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "eslint-config-next": "14.0.0"
   }
 }

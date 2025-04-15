@@ -1,45 +1,68 @@
 import { useState, useEffect } from 'react';
-import { ethers } from 'ethers';
-import dynamic from 'next/dynamic';
+import { Contract } from 'ethers';
 import SocialNetwork from '../artifacts/contracts/SocialNetwork.sol/SocialNetwork.json';
+import { Web3Handler } from '../utils/web3';
 
 interface LandingPageProps {
-  onConnect: (account: string, contract: ethers.Contract) => void;
+  onConnect: (account: string, contract: Contract) => void;
 }
 
-// Client-side only component
-const LandingPage = ({ onConnect }: LandingPageProps) => {
+// Pre-defined features array to avoid dynamic evaluation
+const FEATURES = [
+  {
+    title: "Decentralized",
+    description: "Your data is stored securely on the blockchain"
+  },
+  {
+    title: "Censorship Resistant",
+    description: "No central authority can control your content"
+  },
+  {
+    title: "Community Owned",
+    description: "Built and governed by the community"
+  }
+] as const;
+
+const LandingPage: React.FC<LandingPageProps> = ({ onConnect }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [name, setName] = useState('');
   const [bio, setBio] = useState('');
   const [avatar, setAvatar] = useState('');
   const [mounted, setMounted] = useState(false);
+  const [web3Handler] = useState(() => new Web3Handler());
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    
+    const handleAccountsChanged = async (accounts: string[]) => {
+      await web3Handler.handleAccountsChanged(accounts);
+    };
+
+    web3Handler.setupAccountChangeListener(handleAccountsChanged);
+
+    return () => {
+      web3Handler.removeAccountChangeListener(handleAccountsChanged);
+    };
+  }, [web3Handler]);
 
   const connectWallet = async () => {
-    if (typeof window !== 'undefined' && window.ethereum) {
-      try {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        const account = accounts[0];
+    const initialized = await web3Handler.initialize();
+    if (!initialized) return;
 
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const signer = await provider.getSigner();
-        const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || 'YOUR_CONTRACT_ADDRESS';
-        const socialContract = new ethers.Contract(contractAddress, SocialNetwork.abi, signer);
+    const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
+    if (!contractAddress) {
+      console.error('Contract address not configured');
+      return;
+    }
 
-        onConnect(account, socialContract);
-      } catch (error) {
-        console.error('Error connecting to MetaMask:', error);
-      }
-    } else {
-      console.error('MetaMask is not installed');
+    const contract = await web3Handler.createContract(contractAddress, SocialNetwork.abi);
+    const account = web3Handler.getAccount();
+
+    if (contract && account) {
+      onConnect(account, contract);
     }
   };
 
-  // Don't render anything until mounted (prevents hydration issues)
   if (!mounted) {
     return null;
   }
@@ -110,20 +133,7 @@ const LandingPage = ({ onConnect }: LandingPageProps) => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[
-            {
-              title: "Decentralized",
-              description: "Your data is stored securely on the blockchain"
-            },
-            {
-              title: "Censorship Resistant",
-              description: "No central authority can control your content"
-            },
-            {
-              title: "Community Owned",
-              description: "Built and governed by the community"
-            }
-          ].map((feature) => (
+          {FEATURES.map((feature) => (
             <div
               key={feature.title}
               className="bg-gray-800/30 backdrop-blur-sm p-6 rounded-lg border border-purple-500/10 hover:border-purple-500/30 transition-all duration-300 hover:-translate-y-1 group"
@@ -140,7 +150,5 @@ const LandingPage = ({ onConnect }: LandingPageProps) => {
   );
 };
 
-// Export as client-side only component
-export default dynamic(() => Promise.resolve(LandingPage), {
-  ssr: false
-}); 
+// Export the component directly since we're not using dynamic import anymore
+export default LandingPage; 
