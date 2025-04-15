@@ -1,0 +1,154 @@
+import { useState, useEffect } from 'react';
+import { ethers } from 'ethers';
+import SocialNetwork from '../contracts/SocialNetwork.sol/SocialNetwork.json';
+
+export default function Home() {
+  const [account, setAccount] = useState('');
+  const [contract, setContract] = useState(null);
+  const [posts, setPosts] = useState([]);
+  const [newPost, setNewPost] = useState('');
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    loadWeb3();
+  }, []);
+
+  const loadWeb3 = async () => {
+    if (window.ethereum) {
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        setAccount(accounts[0]);
+
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await provider.getSigner();
+        const contractAddress = 'YOUR_CONTRACT_ADDRESS'; // Replace with deployed contract address
+        const socialContract = new ethers.Contract(contractAddress, SocialNetwork.abi, signer);
+        setContract(socialContract);
+
+        // Load initial data
+        loadProfile();
+        loadPosts();
+      } catch (error) {
+        console.error('Error connecting to MetaMask:', error);
+      }
+    } else {
+      console.error('MetaMask is not installed');
+    }
+  };
+
+  const loadProfile = async () => {
+    if (contract) {
+      const profile = await contract.getProfile(account);
+      setProfile(profile);
+    }
+  };
+
+  const loadPosts = async () => {
+    if (contract) {
+      const postCount = await contract.postCount();
+      const posts = [];
+      for (let i = 1; i <= postCount; i++) {
+        const post = await contract.getPost(i);
+        posts.push(post);
+      }
+      setPosts(posts);
+    }
+  };
+
+  const createPost = async () => {
+    if (contract && newPost.trim() !== '') {
+      try {
+        await contract.createPost(newPost);
+        setNewPost('');
+        loadPosts();
+      } catch (error) {
+        console.error('Error creating post:', error);
+      }
+    }
+  };
+
+  const likePost = async (postId) => {
+    if (contract) {
+      try {
+        await contract.likePost(postId);
+        loadPosts();
+      } catch (error) {
+        console.error('Error liking post:', error);
+      }
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      <nav className="bg-white shadow-lg">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex justify-between h-16">
+            <div className="flex">
+              <div className="flex-shrink-0 flex items-center">
+                <h1 className="text-xl font-bold">Decentralized Social Network</h1>
+              </div>
+            </div>
+            <div className="flex items-center">
+              <span className="text-gray-700">{account}</span>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        {!profile ? (
+          <div className="bg-white shadow rounded-lg p-6">
+            <h2 className="text-2xl font-bold mb-4">Create Your Profile</h2>
+            <button
+              onClick={() => contract.createProfile('User', 'Bio', 'avatar.png')}
+              className="bg-blue-500 text-white px-4 py-2 rounded"
+            >
+              Create Profile
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            <div className="bg-white shadow rounded-lg p-6">
+              <h2 className="text-2xl font-bold mb-4">Create a Post</h2>
+              <textarea
+                value={newPost}
+                onChange={(e) => setNewPost(e.target.value)}
+                className="w-full p-2 border rounded"
+                rows="3"
+                placeholder="What's on your mind?"
+              />
+              <button
+                onClick={createPost}
+                className="mt-2 bg-blue-500 text-white px-4 py-2 rounded"
+              >
+                Post
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {posts.map((post, index) => (
+                <div key={index} className="bg-white shadow rounded-lg p-6">
+                  <div className="flex items-center mb-4">
+                    <div className="font-bold">{post.author}</div>
+                    <div className="ml-2 text-gray-500">
+                      {new Date(post.timestamp * 1000).toLocaleString()}
+                    </div>
+                  </div>
+                  <p className="mb-4">{post.content}</p>
+                  <div className="flex items-center">
+                    <button
+                      onClick={() => likePost(index + 1)}
+                      className="text-gray-500 hover:text-red-500"
+                    >
+                      Like ({post.likeCount})
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+} 
