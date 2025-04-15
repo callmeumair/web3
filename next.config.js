@@ -4,7 +4,7 @@ const nextConfig = {
   swcMinify: true,
   poweredByHeader: false,
   env: {
-    NEXT_PUBLIC_CONTRACT_ADDRESS: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+    NEXT_PUBLIC_CONTRACT_ADDRESS: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || '0x0000000000000000000000000000000000000000',
   },
   webpack: (config, { isServer }) => {
     // Handle polyfills and fallbacks
@@ -70,10 +70,8 @@ const nextConfig = {
       }
     ];
   },
-  // Add experimental features for better optimization
+  // Remove deprecated experimental features
   experimental: {
-    optimizeFonts: true,
-    modern: true,
     scrollRestoration: true
   }
 };

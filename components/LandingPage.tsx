@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Contract } from 'ethers';
-import SocialNetwork from '../artifacts/contracts/SocialNetwork.sol/SocialNetwork.json';
+import SocialNetwork from '../../artifacts/contracts/SocialNetwork.sol/SocialNetwork.json';
 import { Web3Handler } from '../utils/web3';
 
 interface LandingPageProps {
