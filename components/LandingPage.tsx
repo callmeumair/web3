@@ -7,6 +7,24 @@ interface LandingPageProps {
   onConnect: (account: string, contract: ethers.Contract) => void;
 }
 
+const fadeIn = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 }
+};
+
+const slideUp = {
+  initial: { y: 20, opacity: 0 },
+  animate: { y: 0, opacity: 1 },
+  exit: { y: -20, opacity: 0 }
+};
+
+const scaleIn = {
+  initial: { scale: 0.8, opacity: 0 },
+  animate: { scale: 1, opacity: 1 },
+  exit: { scale: 0.8, opacity: 0 }
+};
+
 export default function LandingPage({ onConnect }: LandingPageProps) {
   const [isLogin, setIsLogin] = useState(true);
   const [name, setName] = useState('');
@@ -35,41 +53,31 @@ export default function LandingPage({ onConnect }: LandingPageProps) {
 
   return (
     <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 1 }}
+      {...fadeIn}
+      transition={{ duration: 0.5 }}
       className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-800"
     >
       <motion.div 
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.8, delay: 0.2 }}
+        {...scaleIn}
+        transition={{ duration: 0.5, delay: 0.2 }}
         className="container mx-auto px-4 py-16"
       >
         <motion.div
-          initial={{ y: 50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
+          {...slideUp}
+          transition={{ duration: 0.5, delay: 0.4 }}
           className="max-w-md mx-auto bg-gray-800/80 backdrop-blur-md rounded-xl shadow-2xl overflow-hidden border border-purple-500/20"
         >
           <div className="p-8">
             <motion.div
-              initial={{ scale: 0.5, rotate: -10 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ 
-                type: "spring",
-                stiffness: 260,
-                damping: 20,
-                delay: 0.6
-              }}
+              {...scaleIn}
+              transition={{ duration: 0.5, delay: 0.6 }}
               className="text-center mb-8"
             >
               <h1 className="text-4xl font-bold text-white mb-2">
                 Decentralized Social Network
               </h1>
               <motion.p 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                {...fadeIn}
                 transition={{ delay: 0.8 }}
                 className="text-gray-400"
               >
@@ -83,14 +91,13 @@ export default function LandingPage({ onConnect }: LandingPageProps) {
                 initial={{ opacity: 0, x: isLogin ? -20 : 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: isLogin ? 20 : -20 }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: 0.3 }}
                 className="space-y-6"
               >
                 {!isLogin && (
                   <>
                     <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
+                      {...slideUp}
                       transition={{ delay: 0.2 }}
                     >
                       <label className="block text-gray-300 text-sm font-bold mb-2">
@@ -105,8 +112,7 @@ export default function LandingPage({ onConnect }: LandingPageProps) {
                       />
                     </motion.div>
                     <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
+                      {...slideUp}
                       transition={{ delay: 0.3 }}
                     >
                       <label className="block text-gray-300 text-sm font-bold mb-2">
@@ -121,8 +127,7 @@ export default function LandingPage({ onConnect }: LandingPageProps) {
                       />
                     </motion.div>
                     <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
+                      {...slideUp}
                       transition={{ delay: 0.4 }}
                     >
                       <label className="block text-gray-300 text-sm font-bold mb-2">
@@ -152,8 +157,7 @@ export default function LandingPage({ onConnect }: LandingPageProps) {
                 </motion.button>
 
                 <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
+                  {...fadeIn}
                   transition={{ delay: 0.5 }}
                   className="text-center"
                 >
@@ -174,14 +178,12 @@ export default function LandingPage({ onConnect }: LandingPageProps) {
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
+          {...slideUp}
+          transition={{ duration: 0.5, delay: 0.6 }}
           className="mt-12 text-center"
         >
           <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            {...fadeIn}
             transition={{ delay: 0.8 }}
             className="text-2xl font-bold mb-4 text-white"
           >
@@ -204,8 +206,7 @@ export default function LandingPage({ onConnect }: LandingPageProps) {
             ].map((feature, index) => (
               <motion.div
                 key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                {...slideUp}
                 transition={{ delay: 0.8 + index * 0.2 }}
                 whileHover={{ 
                   y: -10,
