@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import SocialNetwork from '../artifacts/contracts/SocialNetwork.sol/SocialNetwork.json';
+import LandingPage from '../components/LandingPage';
 
 interface Post {
   author: string;
@@ -25,32 +26,14 @@ export default function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [newPost, setNewPost] = useState<string>('');
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
 
-  useEffect(() => {
-    loadWeb3();
-  }, []);
-
-  const loadWeb3 = async () => {
-    if (window.ethereum) {
-      try {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        setAccount(accounts[0]);
-
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const signer = await provider.getSigner();
-        const contractAddress = 'YOUR_CONTRACT_ADDRESS'; // Replace with deployed contract address
-        const socialContract = new ethers.Contract(contractAddress, SocialNetwork.abi, signer);
-        setContract(socialContract);
-
-        // Load initial data
-        loadProfile();
-        loadPosts();
-      } catch (error) {
-        console.error('Error connecting to MetaMask:', error);
-      }
-    } else {
-      console.error('MetaMask is not installed');
-    }
+  const handleConnect = async (connectedAccount: string, connectedContract: ethers.Contract) => {
+    setAccount(connectedAccount);
+    setContract(connectedContract);
+    setIsConnected(true);
+    loadProfile();
+    loadPosts();
   };
 
   const loadProfile = async () => {
@@ -94,6 +77,10 @@ export default function Home() {
       }
     }
   };
+
+  if (!isConnected) {
+    return <LandingPage onConnect={handleConnect} />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-100">
