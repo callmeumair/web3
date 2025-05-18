@@ -83,17 +83,17 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <nav className="bg-white shadow-lg">
+    <div className="min-h-screen bg-gray-100 dark:bg-dark-bg">
+      <nav className="bg-white dark:bg-dark-card shadow-lg">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between h-16">
             <div className="flex">
               <div className="flex-shrink-0 flex items-center">
-                <h1 className="text-xl font-bold">Decentralized Social Network</h1>
+                <h1 className="text-xl font-bold dark:text-dark-text">Decentralized Social Network</h1>
               </div>
             </div>
             <div className="flex items-center">
-              <span className="text-gray-700">{account}</span>
+              <span className="text-gray-700 dark:text-gray-300">{account}</span>
             </div>
           </div>
         </div>
@@ -101,29 +101,29 @@ export default function Home() {
 
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         {!profile ? (
-          <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-2xl font-bold mb-4">Create Your Profile</h2>
+          <div className="bg-white dark:bg-dark-card shadow rounded-lg p-6">
+            <h2 className="text-2xl font-bold mb-4 dark:text-dark-text">Create Your Profile</h2>
             <button
               onClick={() => contract?.createProfile('User', 'Bio', 'avatar.png')}
-              className="bg-blue-500 text-white px-4 py-2 rounded"
+              className="btn-glow bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-full transition-all duration-300"
             >
               Create Profile
             </button>
           </div>
         ) : (
           <div className="space-y-6">
-            <div className="bg-white shadow rounded-lg p-6">
-              <h2 className="text-2xl font-bold mb-4">Create a Post</h2>
+            <div className="bg-white dark:bg-dark-card shadow rounded-lg p-6">
+              <h2 className="text-2xl font-bold mb-4 dark:text-dark-text">Create a Post</h2>
               <textarea
                 value={newPost}
                 onChange={(e) => setNewPost(e.target.value)}
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded dark:bg-dark-bg dark:border-gray-700 dark:text-dark-text"
                 rows={3}
                 placeholder="What's on your mind?"
               />
               <button
                 onClick={createPost}
-                className="mt-2 bg-blue-500 text-white px-4 py-2 rounded"
+                className="btn-glow mt-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-full transition-all duration-300"
               >
                 Post
               </button>
@@ -131,18 +131,18 @@ export default function Home() {
 
             <div className="space-y-4">
               {posts.map((post, index) => (
-                <div key={index} className="bg-white shadow rounded-lg p-6">
+                <div key={index} className="bg-white dark:bg-dark-card shadow rounded-lg p-6">
                   <div className="flex items-center mb-4">
-                    <div className="font-bold">{post.author}</div>
-                    <div className="ml-2 text-gray-500">
+                    <div className="font-bold dark:text-dark-text">{post.author}</div>
+                    <div className="ml-2 text-gray-500 dark:text-gray-400">
                       {new Date(post.timestamp * 1000).toLocaleString()}
                     </div>
                   </div>
-                  <p className="mb-4">{post.content}</p>
+                  <p className="mb-4 dark:text-dark-text">{post.content}</p>
                   <div className="flex items-center">
                     <button
                       onClick={() => likePost(index + 1)}
-                      className="text-gray-500 hover:text-red-500"
+                      className="btn-glow text-gray-500 hover:text-pink-600 dark:text-gray-400 dark:hover:text-pink-500 px-3 py-1 rounded-full"
                     >
                       Like ({post.likeCount})
                     </button>

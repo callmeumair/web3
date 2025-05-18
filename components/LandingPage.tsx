@@ -56,7 +56,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onConnect }) => {
   }
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen relative dark:bg-dark-bg">
       <CosmosBackground />
       
       <div className="relative z-10 container mx-auto px-4 py-16">
@@ -70,13 +70,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onConnect }) => {
           {!isConnected ? (
             <button
               onClick={connectWallet}
-              className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-full transition-all duration-300 transform hover:scale-105"
+              className="btn-glow bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-full transition-all duration-300 transform hover:scale-105"
             >
               Connect Wallet
             </button>
           ) : (
             <div className="text-white text-center">
-              <p>Connected: {account}</p>
+              <p className="dark:text-dark-text">Connected: {account}</p>
             </div>
           )}
         </div>

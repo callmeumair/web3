@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -25,6 +26,11 @@ module.exports = {
           800: '#1f2937',
           900: '#111827',
         },
+        dark: {
+          bg: '#0f172a',
+          card: '#1e293b',
+          text: '#e2e8f0',
+        }
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
@@ -57,7 +63,11 @@ module.exports = {
       },
       transitionTimingFunction: {
         'ease-in-out': 'cubic-bezier(0.4, 0, 0.2, 1)',
-      }
+      },
+      boxShadow: {
+        'glow': '0 0 15px rgba(139, 92, 246, 0.5)',
+        'glow-lg': '0 0 25px rgba(139, 92, 246, 0.7)',
+      },
     },
   },
   plugins: [],
